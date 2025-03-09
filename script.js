@@ -1,21 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     const startButton = document.getElementById('start-game');
     const gameBoard = document.getElementById('game-board');
-    const container = document.querySelector('.container');
     let flippedCards = [];
     let moves = 0;
     let time = 0;
     let timerId = null;
     let matches = 0;
 
-    // Pair configuration
     const pairs = [
-        { id: 1, letterImg: 'images/A.png', objectImg: 'images/apple.jpeg' },
-        { id: 2, letterImg: 'images/B.png', objectImg: 'images/ball.jpeg' },
-        { id: 3, letterImg: 'images/C.png', objectImg: 'images/cat.jpeg' },
-        { id: 4, letterImg: 'images/D.png', objectImg: 'images/dog.jpeg' },
-        { id: 5, letterImg: 'images/E.png', objectImg: 'images/egg.jpeg' },
-        { id: 6, letterImg: 'images/F.png', objectImg: 'images/fish.jpeg' }
+        { id: 1, letter: 'A', image: 'images/apple.jpeg' },
+        { id: 2, letter: 'B', image: 'images/ball.jpeg' },
+        { id: 3, letter: 'C', image: 'images/cat.jpeg' },
+        { id: 4, letter: 'D', image: 'images/dog.jpeg' },
+        { id: 5, letter: 'E', image: 'images/egg.jpeg' },
+        { id: 6, letter: 'F', image: 'images/fish.jpeg' }
     ];
 
     startButton.addEventListener('click', startGame);
@@ -32,26 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
         timerId = setInterval(updateTimer, 1000);
 
         initStats();
-        preloadAllImages();
+        preloadImages();
         createGameBoard();
-    }
-
-    function preloadAllImages() {
-        pairs.forEach(pair => {
-            preloadImage(pair.letterImg);
-            preloadImage(pair.objectImg);
-        });
-    }
-
-    function preloadImage(src) {
-        new Image().src = src;
     }
 
     function createGameBoard() {
         const cards = [];
         pairs.forEach(pair => {
-            cards.push(createCard(pair.letterImg, pair.id));
-            cards.push(createCard(pair.objectImg, pair.id));
+            cards.push(createCard(pair.letter, pair.id, 'letter'));
+            cards.push(createCard(pair.image, pair.id, 'image'));
         });
         
         shuffleArray(cards).forEach(card => {
@@ -59,25 +46,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function createCard(imgSrc, pairId) {
+    function createCard(content, pairId, type) {
         const card = document.createElement('div');
         card.className = 'card';
         card.dataset.pairId = pairId;
-        card.dataset.matched = 'false';
 
-        const img = document.createElement('img');
-        img.src = imgSrc;
-        img.alt = `Game card ${pairId}`;
+        const inner = document.createElement('div');
+        inner.className = 'card-inner';
 
-        card.appendChild(img);
+        const front = document.createElement('div');
+        front.className = 'card-front';
+        front.textContent = '?';
+
+        const back = document.createElement('div');
+        back.className = 'card-back';
+        
+        if (type === 'letter') {
+            const letter = document.createElement('div');
+            letter.textContent = content;
+            letter.style.fontSize = '3em';
+            back.appendChild(letter);
+        } else {
+            const img = new Image();
+            img.src = content;
+            img.alt = `Image for ${content}`;
+            back.appendChild(img);
+        }
+
+        inner.appendChild(front);
+        inner.appendChild(back);
+        card.appendChild(inner);
+
         card.addEventListener('click', () => handleCardClick(card));
         return card;
     }
 
     function handleCardClick(card) {
-        if (card.dataset.matched === 'true' || 
+        if (card.classList.contains('flipped') || 
             flippedCards.length === 2 || 
-            card.classList.contains('flipped')) return;
+            card.classList.contains('matched')) return;
 
         card.classList.add('flipped');
         flippedCards.push(card);
@@ -91,39 +98,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function checkMatch() {
         const [card1, card2] = flippedCards;
-        const pairMatch = card1.dataset.pairId === card2.dataset.pairId;
+        const isMatch = card1.dataset.pairId === card2.dataset.pairId;
 
-        if (pairMatch) {
-            matches++;
-            setTimeout(() => {
-                removeMatchedCards(card1, card2);
-                checkWinCondition();
-            }, 500);
-        } else {
-            setTimeout(() => {
-                flippedCards.forEach(card => card.classList.remove('flipped'));
-            }, 1000);
-        }
-        flippedCards = [];
+        setTimeout(() => {
+            if (isMatch) {
+                matches++;
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                if (matches === pairs.length) endGame();
+            } else {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+            }
+            flippedCards = [];
+        }, 600);
     }
 
-    function removeMatchedCards(...cards) {
-        cards.forEach(card => {
-            card.dataset.matched = 'true';
-            card.innerHTML = ''; // Remove image
-            card.style.backgroundColor = '#3c404d'; // Match background
-            card.classList.remove('flipped');
-        });
-    }
-
-    function checkWinCondition() {
-        if (matches === pairs.length) {
-            clearInterval(timerId);
-            setTimeout(() => {
-                alert(`🏆 Winner! Time: ${time}s | Moves: ${moves}`);
-                startButton.disabled = false;
-            }, 500);
-        }
+    function endGame() {
+        clearInterval(timerId);
+        setTimeout(() => {
+            alert(`🏆 Game Over!\nTime: ${time}s\nMoves: ${moves}`);
+            startButton.disabled = false;
+        }, 500);
     }
 
     function initStats() {
@@ -132,16 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
             statsDiv = document.createElement('div');
             statsDiv.id = 'stats';
             statsDiv.className = 'stats';
-            container.insertBefore(statsDiv, gameBoard);
+            document.querySelector('.container').insertBefore(statsDiv, gameBoard);
         }
         updateStats();
     }
 
     function updateStats() {
-        const statsDiv = document.getElementById('stats');
-        if (statsDiv) {
-            statsDiv.textContent = `Moves: ${moves} | Time: ${time}`;
-        }
+        document.getElementById('stats').textContent = `Moves: ${moves} | Time: ${time}`;
     }
 
     function shuffleArray(array) {
@@ -150,6 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
             [array[i], array[j]] = [array[j], array[i]];
         }
         return array;
+    }
+
+    function preloadImages() {
+        pairs.forEach(pair => {
+            new Image().src = pair.image;
+            new Image().src = pair.letter;
+        });
     }
 
     function updateTimer() {
