@@ -155,3 +155,45 @@ h1 {
         font-size: 3em;
     }
 }
+/* Card front styles */
+.card-front {
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+/* Letter card styling */
+.card-front.letter {
+    font-size: 4em;
+    color: #2c3e50;
+    text-transform: uppercase;
+}
+
+/* Image card styling */
+.card-front.image img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+/* Card hover effect */
+.card:not(.matched):hover .card-back {
+    transform: scale(0.98);
+    transition: transform 0.2s;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-front.letter {
+        font-size: 3em;
+    }
+    
+    .card-front.image img {
+        max-width: 85%;
+        max-height: 85%;
+    }
+}
