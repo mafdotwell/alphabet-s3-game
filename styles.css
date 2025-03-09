@@ -1,65 +1,66 @@
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #282c34;
+    font-family: 'Arial', sans-serif;
+    background-color: #2d2d2d;
     color: #ffffff;
     margin: 0;
-    padding: 20px;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .container {
+    width: 90%;
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 30px;
-    background-color: #3c404d;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #3a3a3a;
     border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    text-align: center;
 }
 
 h1 {
-    color: #4caf50;
-    margin-bottom: 25px;
+    color: #4CAF50;
+    margin-bottom: 1.5rem;
     font-size: 2.5em;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .instructions {
     font-size: 1.1em;
     line-height: 1.6;
-    margin-bottom: 30px;
-    color: #adbac7;
+    color: #cccccc;
+    margin: 1.5rem auto;
     max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 #game-board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    justify-content: center;
-    padding: 20px;
-    margin: 0 auto;
+    gap: 1rem;
+    margin: 2rem auto;
+    max-width: 800px;
 }
 
 .card {
     aspect-ratio: 1/1;
-    position: relative;
+    perspective: 1000px;
     cursor: pointer;
-    transform-style: preserve-3d;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
     transition: transform 0.6s;
+    transform-style: preserve-3d;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     border-radius: 10px;
-    background: none;
-    border: none;
 }
 
-.card.flipped {
+.card.flipped .card-inner {
     transform: rotateY(180deg);
-}
-
-.card.matched {
-    opacity: 0.6;
-    cursor: default;
 }
 
 .card-front,
@@ -72,145 +73,69 @@ h1 {
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.card-back {
-    background-color: #565c6f;
-    transform: rotateY(0deg);
 }
 
 .card-front {
+    background-color: #4CAF50;
+    transform: rotateY(0deg);
+    font-size: 2em;
+    font-weight: bold;
+    color: white;
+}
+
+.card-back {
     background-color: white;
     transform: rotateY(180deg);
     padding: 15px;
 }
 
-.card-front.letter {
-    font-size: 4em;
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-.card-front img {
+.card-back img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
 #start-game {
-    background-color: #4caf50;
+    background-color: #4CAF50;
     color: white;
-    padding: 15px 30px;
+    padding: 12px 24px;
     border: none;
     border-radius: 25px;
     cursor: pointer;
     font-size: 1.1em;
     transition: all 0.3s ease;
-    margin-bottom: 25px;
+    margin: 1rem 0;
 }
 
 #start-game:hover {
-    background-color: #43a047;
+    background-color: #45a049;
     transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-#start-game:disabled {
-    background-color: #666;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
 }
 
 .stats {
     font-size: 1.2em;
-    color: #adbac7;
-    margin: 20px 0;
+    color: #cccccc;
+    margin: 1rem 0;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
     #game-board {
         grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
     }
     
     .container {
-        padding: 20px;
-        margin: 20px;
-    }
-    
-    h1 {
-        font-size: 2em;
+        padding: 1.5rem;
     }
 }
 
 @media (max-width: 480px) {
     #game-board {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
     }
     
-    .card-front.letter {
-        font-size: 3em;
+    h1 {
+        font-size: 2em;
     }
-}
-/* Card front styles */
-.card-front {
-    background-color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
-}
-
-/* Letter card styling */
-.card-front.letter {
-    font-size: 4em;
-    color: #2c3e50;
-    text-transform: uppercase;
-}
-
-/* Image card styling */
-.card-front.image img {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain;
-    border-radius: 5px;
-}
-
-/* Card hover effect */
-.card:not(.matched):hover .card-back {
-    transform: scale(0.98);
-    transition: transform 0.2s;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .card-front.letter {
-        font-size: 3em;
-    }
-    
-    .card-front.image img {
-        max-width: 85%;
-        max-height: 85%;
-    }
-}
-.card[data-matched="true"] {
-    cursor: default;
-    box-shadow: none;
-    opacity: 0.5;
-}
-
-.card.flipped {
-    transform: rotateY(180deg);
-    transition: transform 0.6s;
-}
-
-.card img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: opacity 0.3s;
 }
