@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerId = null;
     let matches = 0;
 
-    // Alphabet-image pairs (update paths if needed)
     const pairs = [
         { id: 1, letter: 'images/A.png', image: 'images/apple.jpeg' },
         { id: 2, letter: 'images/B.png', image: 'images/ball.jpeg' },
@@ -17,41 +16,38 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 6, letter: 'images/F.png', image: 'images/fish.jpeg' }
     ];
 
-
     startButton.addEventListener('click', startGame);
 
     function startGame() {
+        resetGameState();
+        initializeGameBoard();
+        startTimer();
+    }
+
+    function resetGameState() {
         startButton.disabled = true;
         gameBoard.innerHTML = '';
         flippedCards = [];
         moves = 0;
         time = 0;
         matches = 0;
-        
-        if (timerId) clearInterval(timerId);
-        timerId = setInterval(updateTimer, 1000);
+        updateStats();
+    }
 
-        initStats();
+    function initializeGameBoard() {
         preloadImages();
-        createGameBoard();
+        const cards = pairs.flatMap(pair => [
+            createCard(pair.letter, pair.id, 'letter'),
+            createCard(pair.image, pair.id, 'image')
+        ]);
+        shuffleArray(cards).forEach(card => gameBoard.appendChild(card));
     }
 
-    function createGameBoard() {
-        const cards = [];
-        pairs.forEach(pair => {
-            cards.push(createCard(pair.letter, pair.id, 'letter'));
-            cards.push(createCard(pair.image, pair.id, 'image'));
-        });
-        
-        shuffleArray(cards).forEach(card => {
-            gameBoard.appendChild(card);
-        });
-    }
-
-    function createCard(content, pairId, type) {
+    function createCard(imgSrc, pairId, type) {
         const card = document.createElement('div');
         card.className = 'card';
         card.dataset.pairId = pairId;
+        card.dataset.type = type;
 
         const inner = document.createElement('div');
         inner.className = 'card-inner';
@@ -63,17 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const back = document.createElement('div');
         back.className = 'card-back';
         
-        if (type === 'letter') {
-            const letter = document.createElement('div');
-            letter.textContent = content;
-            letter.style.fontSize = '3em';
-            back.appendChild(letter);
-        } else {
-            const img = new Image();
-            img.src = content;
-            img.alt = `Image for ${content}`;
-            back.appendChild(img);
-        }
+        const img = new Image();
+        img.src = imgSrc;
+        img.alt = type === 'letter' ? `Letter ${String.fromCharCode(64 + pairId)}` : `Image for ${String.fromCharCode(64 + pairId)}`;
+        back.appendChild(img);
 
         inner.appendChild(front);
         inner.appendChild(back);
@@ -84,9 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleCardClick(card) {
-        if (card.classList.contains('flipped') || 
+        if (card.classList.contains('matched') || 
             flippedCards.length === 2 || 
-            card.classList.contains('matched')) return;
+            card.classList.contains('flipped')) return;
 
         card.classList.add('flipped');
         flippedCards.push(card);
@@ -104,39 +93,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setTimeout(() => {
             if (isMatch) {
-                matches++;
-                card1.classList.add('matched');
-                card2.classList.add('matched');
+                handleMatchSuccess(card1, card2);
                 if (matches === pairs.length) endGame();
             } else {
-                card1.classList.remove('flipped');
-                card2.classList.remove('flipped');
+                resetFlippedCards();
             }
             flippedCards = [];
         }, 600);
     }
 
+    function handleMatchSuccess(card1, card2) {
+        matches++;
+        [card1, card2].forEach(card => {
+            card.classList.add('matched');
+            const img = card.querySelector('img');
+            img.src = 'images/blank.png';
+            img.alt = 'Matched pair';
+        });
+    }
+
+    function resetFlippedCards() {
+        flippedCards.forEach(card => card.classList.remove('flipped'));
+    }
+
     function endGame() {
         clearInterval(timerId);
         setTimeout(() => {
-            alert(`🏆 Game Over!\nTime: ${time}s\nMoves: ${moves}`);
+            alert(`🏆 Game Completed!\nTime: ${time}s\nMoves: ${moves}`);
             startButton.disabled = false;
         }, 500);
     }
 
-    function initStats() {
-        let statsDiv = document.getElementById('stats');
-        if (!statsDiv) {
-            statsDiv = document.createElement('div');
-            statsDiv.id = 'stats';
-            statsDiv.className = 'stats';
-            document.querySelector('.container').insertBefore(statsDiv, gameBoard);
-        }
-        updateStats();
-    }
-
-    function updateStats() {
-        document.getElementById('stats').textContent = `Moves: ${moves} | Time: ${time}`;
+    function preloadImages() {
+        const images = [
+            ...pairs.flatMap(p => [p.letter, p.image]),
+            'images/blank.png'
+        ];
+        images.forEach(src => new Image().src = src);
     }
 
     function shuffleArray(array) {
@@ -147,15 +140,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return array;
     }
 
-    function preloadImages() {
-        pairs.forEach(pair => {
-            new Image().src = pair.image;
-            new Image().src = pair.letter;
-        });
+    function startTimer() {
+        if (timerId) clearInterval(timerId);
+        timerId = setInterval(() => {
+            time++;
+            updateStats();
+        }, 1000);
     }
 
-    function updateTimer() {
-        time++;
-        updateStats();
+    function updateStats() {
+        document.getElementById('stats').textContent = `Moves: ${moves} | Time: ${time}s`;
     }
 });
