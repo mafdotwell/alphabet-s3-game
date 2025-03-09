@@ -7,14 +7,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerId = null;
     let matches = 0;
 
+    // Alphabet-image pairs (update paths if needed)
     const pairs = [
-        { id: 1, letter: 'A', image: 'images/apple.jpeg' },
-        { id: 2, letter: 'B', image: 'images/ball.jpeg' },
-        { id: 3, letter: 'C', image: 'images/cat.jpeg' },
-        { id: 4, letter: 'D', image: 'images/dog.jpeg' },
-        { id: 5, letter: 'E', image: 'images/egg.jpeg' },
-        { id: 6, letter: 'F', image: 'images/fish.jpeg' }
+        { id: 1, letter: 'images/A.png', image: 'images/apple.jpeg' },
+        { id: 2, letter: 'images/B.png', image: 'images/ball.jpeg' },
+        { id: 3, letter: 'images/C.png', image: 'images/cat.jpeg' },
+        { id: 4, letter: 'images/D.png', image: 'images/dog.jpeg' },
+        { id: 5, letter: 'images/E.png', image: 'images/egg.jpeg' },
+        { id: 6, letter: 'images/F.png', image: 'images/fish.jpeg' }
     ];
+
 
     startButton.addEventListener('click', startGame);
 
