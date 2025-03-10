@@ -8,12 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let matches = 0;
 
     const pairs = [
-        { id: 1, letter: 'images/A.png', image: 'images/apple.jpeg' },
-        { id: 2, letter: 'images/B.png', image: 'images/ball.jpeg' },
-        { id: 3, letter: 'images/C.png', image: 'images/cat.jpeg' },
-        { id: 4, letter: 'images/D.png', image: 'images/dog.jpeg' },
-        { id: 5, letter: 'images/E.png', image: 'images/egg.jpeg' },
-        { id: 6, letter: 'images/F.png', image: 'images/fish.jpeg' }
+        { id: 1, letter: 'images/A.png', image: 'images/apple.jpeg', combined: 'images/A-apple.jpg' },
+        { id: 2, letter: 'images/B.png', image: 'images/ball.jpeg', combined: 'images/B-ball.jpg' },
+        { id: 3, letter: 'images/C.png', image: 'images/cat.jpeg', combined: 'images/C-cat.jpg' },
+        { id: 4, letter: 'images/D.png', image: 'images/dog.jpeg', combined: 'images/D-dog.jpg' },
+        { id: 5, letter: 'images/E.png', image: 'images/egg.jpeg', combined: 'images/E-egg.jpg' },
+        { id: 6, letter: 'images/F.png', image: 'images/fish.jpeg', combined: 'images/F-fish.jpg' }
     ];
 
     startButton.addEventListener('click', startGame);
@@ -104,11 +104,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleMatchSuccess(card1, card2) {
         matches++;
+        const pair = pairs.find(p => p.id.toString() === card1.dataset.pairId);
+        
         [card1, card2].forEach(card => {
             card.classList.add('matched');
             const img = card.querySelector('img');
-            img.src = 'images/blank.png';
-            img.alt = 'Matched pair';
+            img.src = pair.combined;
+            img.alt = `Combined ${pair.letter.split('/').pop().charAt(0)}-${pair.image.split('/').pop().split('.')[0]}`;
+            img.style.objectFit = 'cover';
         });
     }
 
@@ -126,10 +129,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function preloadImages() {
         const images = [
-            ...pairs.flatMap(p => [p.letter, p.image]),
-            'images/blank.png'
+            ...pairs.flatMap(p => [p.letter, p.image, p.combined])
         ];
-        images.forEach(src => new Image().src = src);
+        images.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            img.onerror = () => console.error('Failed to load image:', src);
+        });
     }
 
     function shuffleArray(array) {
