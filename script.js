@@ -61,7 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const img = new Image();
         img.src = imgSrc;
-        img.alt = type === 'letter' ? `Letter ${String.fromCharCode(64 + pairId)}` : `Image for ${String.fromCharCode(64 + pairId)}`;
+        img.alt = type === 'letter' 
+            ? `Letter ${String.fromCharCode(64 + pairId)}` 
+            : `Image for ${String.fromCharCode(64 + pairId)}`;
         back.appendChild(img);
 
         inner.appendChild(front);
@@ -106,12 +108,20 @@ document.addEventListener('DOMContentLoaded', () => {
         matches++;
         const pair = pairs.find(p => p.id.toString() === card1.dataset.pairId);
         
+        // Transform both cards to show combined image
         [card1, card2].forEach(card => {
             card.classList.add('matched');
-            const img = card.querySelector('img');
-            img.src = pair.combined;
-            img.alt = `Combined ${pair.letter.split('/').pop().charAt(0)}-${pair.image.split('/').pop().split('.')[0]}`;
-            img.style.objectFit = 'cover';
+            const back = card.querySelector('.card-back');
+            back.innerHTML = ''; // Clear previous content
+            
+            const combinedImg = new Image();
+            combinedImg.src = pair.combined;
+            combinedImg.alt = `Combined ${pair.letter.split('/').pop().charAt(0)}-${pair.image.split('/').pop().split('.')[0]}`;
+            combinedImg.style.objectFit = 'cover';
+            combinedImg.style.width = '100%';
+            combinedImg.style.height = '100%';
+            
+            back.appendChild(combinedImg);
         });
     }
 
