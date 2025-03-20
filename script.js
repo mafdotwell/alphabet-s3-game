@@ -168,3 +168,68 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('stats').textContent = `Moves: ${moves} | Time: ${time}s`;
     }
 });
+// Configure Amplify
+Amplify.configure({
+  Auth: {
+    region: 'YOUR_AWS_REGION',
+    userPoolId: 'YOUR_USER_POOL_ID',
+    userPoolWebClientId: 'YOUR_APP_CLIENT_ID'
+  }
+});
+
+// Auth Functions
+async function signUp() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const email = document.getElementById('email').value;
+
+  try {
+    await Auth.signUp({
+      username,
+      password,
+      attributes: {
+        email
+      }
+    });
+    alert('Confirmation code sent to email');
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function signIn() {
+  const username = document.getElementById('signin-username').value;
+  const password = document.getElementById('signin-password').value;
+
+  try {
+    await Auth.signIn(username, password);
+    checkAuthState();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function signOut() {
+  await Auth.signOut();
+  checkAuthState();
+}
+
+// Auth State Management
+async function checkAuthState() {
+  try {
+    const user = await Auth.currentAuthenticatedUser();
+    document.getElementById('auth-forms').style.display = 'none';
+    document.getElementById('auth-status').style.display = 'block';
+    document.getElementById('username-display').textContent = user.username;
+    document.getElementById('game-container').style.display = 'block';
+  } catch {
+    document.getElementById('auth-forms').style.display = 'block';
+    document.getElementById('auth-status').style.display = 'none';
+    document.getElementById('game-container').style.display = 'none';
+  }
+}
+
+// Initialize auth check
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuthState();
+});
