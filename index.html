@@ -1,12 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://sdk.amazonaws.com/js/aws-amplify/2.11.7/aws-amplify.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alphabet Matching Game</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="auth-container" class="auth-container">
+  <div id="auth-forms">
+    <div class="auth-form" id="signup-form">
+      <input type="text" id="username" placeholder="Username">
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="signUp()">Sign Up</button>
+      <button onclick="showSignIn()">Already have an account?</button>
+    </div>
+
+    <div class="auth-form" id="signin-form" style="display:none;">
+      <input type="text" id="signin-username" placeholder="Username">
+      <input type="password" id="signin-password" placeholder="Password">
+      <button onclick="signIn()">Sign In</button>
+      <button onclick="showSignUp()">Need an account?</button>
+    </div>
+  </div>
+  <div id="auth-status" style="display:none;">
+    <p>Welcome <span id="username-display"></span>!</p>
+    <button onclick="signOut()">Sign Out</button>
+  </div>
+</div>
     <div class="container">
         <h1>ALPHABET MATCHING GAME</h1>
         <p class="instructions">
