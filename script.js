@@ -171,9 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Configure Amplify
 Amplify.configure({
   Auth: {
-    region: 'YOUR_AWS_REGION',
-    userPoolId: 'YOUR_USER_POOL_ID',
-    userPoolWebClientId: 'YOUR_APP_CLIENT_ID'
+    region: 'eu-north-1',
+    userPoolId: 'eu-north-1_7xUepZdds',
+    userPoolWebClientId: '1f6skc74nvch0v1cdpi93pti7c'
   }
 });
 
